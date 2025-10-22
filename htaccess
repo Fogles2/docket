@@ -1,0 +1,28 @@
+# Prevent directory listing
+Options -Indexes
+
+# Protect files and directories
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Prevent access to database file
+<Files "docket.db">
+    Require all denied
+</Files>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Content-Security-Policy "default-src 'self';"
+</IfModule>
+
+# Redirect all requests to index.php except for existing files
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [L,QSA]
+</IfModule>
