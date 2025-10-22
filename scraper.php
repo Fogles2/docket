@@ -108,14 +108,15 @@ class Scraper {
             }
         }
 
-        // De-duplicate records by a best-effort composite key: prefer case_number if present,
+        // De-duplicate records by a composite key: case_number + charge if case_number present,
         // otherwise use md5(charge+defendant+dob) to avoid collapsing entries with empty case_number.
         $unique = [];
         $clean = [];
         foreach ($allRecords as $r) {
             $case = trim($r['case_number'] ?? '');
+            $charge = trim($r['charge'] ?? '');
             if ($case !== '') {
-                $key = 'case:' . $case;
+                $key = 'case:' . $case . '||charge:' . $charge;
             } else {
                 $key = 'hash:' . md5(($r['charge'] ?? '') . '||' . ($r['defendant'] ?? '') . '||' . ($r['dob'] ?? ''));
             }
